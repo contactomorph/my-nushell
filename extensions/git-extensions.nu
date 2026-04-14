@@ -250,7 +250,7 @@ export def 'gt on-head' [rebased_branch: string] {
   rebase-in-order "HEAD" $rebased_branch
 }
 
-# Rebase the top of a branch on HEAD
+# Rebase the top commit of a branch on HEAD
 export def 'gt on-head-1' [rebased_branch: string] {
   run-and-get-text { git rebase --onto HEAD $"($rebased_branch)~1" $rebased_branch }
 }
@@ -295,7 +295,7 @@ export def 'gt mt' [] {
 }
 
 # -----------------------------------------
-# status: see
+# status: display
 # -----------------------------------------
 
 # Display status
@@ -343,6 +343,11 @@ export def 'gt ustg' [] {
   run-and-get-text { git reset };
 }
 
+# Reset the workspace to the last commit, discarding all modifications
+export def 'gt clr' [] {
+  run-and-get-text { git reset --hard };
+}
+
 # Create a commit
 export def 'gt ci' [] {
   run-and-get-text { git commit };
@@ -359,7 +364,7 @@ export def 'gt hide' [] {
 }
 
 # Get back previously stashed modifications
-export def 'gt vent' [] {
+export def 'gt exh' [] {
   run-and-get-text { git stash pop };
 }
 
@@ -379,20 +384,21 @@ export def 'gt fget' [commit: string, ...file_names: string] {
 # Fetch from origin
 export def 'gt fetch' [] {
   let output = run-and-get-output-obj { git fetch origin };
-  $output.stderr | split row "\n" | where { |it: string|
-    ($it | str starts-with " * ") or ($it | str starts-with "   ")
-  } | each { |it|
-    # let parts = $it | split row " " | where {|p| $p != "" };
-    # let pcount = $parts | length;
-    # if ($pcount == 6) {
-    #   return { "local-ref": $parts.3, "remote-ref": $parts.5, "content": ($parts.1 + " " + $parts.2) };
-    # } else if ($pcount == 4) {
-    #   return { "local-ref": $parts.1, "remote-ref": $parts.3, "content": $parts.0 };
-    # } else {
-    #   return { "local-ref": "?", "remote-ref": "?", "content": $it };
-    # }
-    $it | str substring 3..
-  }
+  $output.stderr | split row "\n"
+  # | where { |it: string|
+  #   ($it | str starts-with " * ") or ($it | str starts-with "   ")
+  # } | each { |it|
+  #   # let parts = $it | split row " " | where {|p| $p != "" };
+  #   # let pcount = $parts | length;
+  #   # if ($pcount == 6) {
+  #   #   return { "local-ref": $parts.3, "remote-ref": $parts.5, "content": ($parts.1 + " " + $parts.2) };
+  #   # } else if ($pcount == 4) {
+  #   #   return { "local-ref": $parts.1, "remote-ref": $parts.3, "content": $parts.0 };
+  #   # } else {
+  #   #   return { "local-ref": "?", "remote-ref": "?", "content": $it };
+  #   # }
+  #   $it | str substring 3..
+  # }
 }
 
 # Update and force push current branch to origin
