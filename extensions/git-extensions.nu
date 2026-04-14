@@ -423,7 +423,9 @@ export def 'gt force' [] {
 # Environment setup
 # -----------------------------------------
 
-let os_name: string = (sys host).name;
-if $os_name == "Windows" {
-  $env.GIT_SSH = 'C:\Program Files\PuTTY\plink.exe';
+export-env {
+  let os_name: string = (sys host).name;
+  if $os_name == "Windows" {
+    $env.GIT_SSH = 'C:\Program Files\PuTTY\plink.exe';
+  }
 }
