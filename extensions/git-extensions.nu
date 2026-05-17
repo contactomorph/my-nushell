@@ -300,7 +300,7 @@ export def 'gt mt' [] {
 
 # Display status
 export def 'gt st' [] {
-  let lines: list<string> = run-and-get-lines { git status -s };
+  let lines: list<string> = run-and-get-lines { git status --porcelain };
   let modified_files = $lines | each { |it|
     let status = $it | str substring 0..2 | str trim;
     let file_name = $it | str substring 2.. | str trim;
@@ -384,7 +384,9 @@ export def 'gt fget' [commit: string, ...file_names: string] {
 # Fetch from origin
 export def 'gt fetch' [] {
   let output = run-and-get-output-obj { git fetch origin };
-  $output.stderr | split row "\n"
+  $output.stderr | split row "\n" | where { |it: string|
+    ($it | str starts-with " * ") or ($it | str starts-with "   ")
+  }
   # | where { |it: string|
   #   ($it | str starts-with " * ") or ($it | str starts-with "   ")
   # } | each { |it|
